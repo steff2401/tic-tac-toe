@@ -59,6 +59,7 @@ const gameBoard = (function () {
         document.querySelector(".info").textContent = "Player 1's turn"
         playerOne.myTurn = true;
         playerTwo.myTurn = false;
+        gameBoard.gameOver = false;
     }
 
     const renderGameBoard = () => {
