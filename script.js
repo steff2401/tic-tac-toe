@@ -57,9 +57,6 @@ const gameBoard = (function () {
         })
 
         document.querySelector(".info").textContent = "Player 1's turn"
-        playerOne.myTurn = true;
-        playerTwo.myTurn = false;
-        gameBoard.gameOver = false;
     }
 
     const renderGameBoard = () => {
@@ -187,11 +184,16 @@ const gameController = (function () {
         gameBoard.gameOver = true;
     }
 
-    const resetGame = (() => {
+    const resetGame = () => {
 
-        const button = document.querySelector("#new-game-button");
-        button.addEventListener("click", gameBoard.resetBoard);
-    })();
+        gameBoard.resetBoard();
+        playerOne.myTurn = true;
+        playerTwo.myTurn = false;
+        gameBoard.gameOver = false;
+    }
+
+    const button = document.querySelector("#new-game-button");
+    button.addEventListener("click", resetGame);
 
     return { checkIfGameOver }
 
