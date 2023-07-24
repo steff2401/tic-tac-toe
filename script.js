@@ -12,7 +12,9 @@ const gameBoard = (function() {
         for (let row = 0; row < gameBoardArray.length; row++) {
 
             for (let col = 0; col < gameBoardArray[row].length; col++) {
+
                 const gameBoardSquare = document.createElement("div");
+                gameBoardSquare.classList = "square";
                 gameBoardSquare.textContent = gameBoardArray[row][col];
                 document.getElementById(row).appendChild(gameBoardSquare);
             }
