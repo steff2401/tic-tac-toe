@@ -125,6 +125,7 @@ const gameController = (function () {
 
                         displayWinner(board[row][0]);
                         endGame();
+                        return;
                     }
                 }
 
@@ -134,6 +135,7 @@ const gameController = (function () {
 
                         displayWinner(board[0][col]);
                         endGame();
+                        return;
                     }
                 }
 
@@ -148,6 +150,7 @@ const gameController = (function () {
 
             displayWinner(board[0][0]);
             endGame();
+            return;
         }
 
         // checking for 3. (second diagonal)
@@ -155,12 +158,14 @@ const gameController = (function () {
 
             displayWinner(board[0][2]);
             endGame();
+            return;
         }
 
         // checking for 4.
         if (allSquaresFilled) {
             displayWinner("tie");
             endGame();
+            return;
         }
     }
 
