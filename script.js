@@ -1,67 +1,45 @@
 const gameBoard = (function () {
 
-    let gameBoardArray = 
-    [["", "", ""],
-     ["", "", ""],
-     ["", "", ""]];
-
-    let gameBoardSquares = [];
-
-    let gameOver = false;
-
-    const addSquareListener = (square) => {
-
-        // if square already has a symbol, or game is over; don't do anything
-        if (square.textContent !== "" || gameBoard.gameOver) {
-            return;
-        }
-
-        if (playerOne.myTurn) {
-            square.textContent = playerOne.symbol;
-            playerOne.myTurn = false;
-            playerTwo.myTurn = true;
-
-            // update array too
-            const row = parseInt(square.id.charAt(0));
-            const col = parseInt(square.id.charAt(1));
-            gameBoardArray[row][col] = playerOne.symbol;
-
-            document.querySelector(".info").textContent = "Player 2's turn"
-
-        } else if (playerTwo.myTurn) {
-
-            square.textContent = playerTwo.symbol;
-            playerTwo.myTurn = false;
-            playerOne.myTurn = true;
-
-            // update array too
-            const row = parseInt(square.id.charAt(0));
-            const col = parseInt(square.id.charAt(1));
-            gameBoardArray[row][col] = playerTwo.symbol;
-
-            document.querySelector(".info").textContent = "Player 1's turn"
-        }
-
-        gameController.checkIfGameOver(gameBoardArray);
-    };
-
+    let gameBoardArray = [["", "", ""],
+                          ["", "", ""],
+                          ["", "", ""]];
+    
     const resetBoard = () => {
         
-        gameBoardArray =
-            [["", "", ""],
-             ["", "", ""],
-             ["", "", ""]];
+        gameBoardArray = [["", "", ""],
+                          ["", "", ""],
+                          ["", "", ""]];
+            
     
-        gameBoardSquares.forEach((square) => {
+        document.querySelectorAll(".square").forEach((square) => {
             square.textContent = "";
-        })
+        });
 
         document.querySelector(".info").textContent = "Player 1's turn"
     }
 
-    const renderGameBoard = () => {
+    const placeMarker = (square, currentPlayer, otherPlayer) => {
 
-        const gameBoardDiv = document.querySelector(".game-board");
+        square.textContent = currentPlayer.symbol;
+        document.querySelector(".info").textContent = `Player ${otherPlayer.number}'s turn`;
+        // place marker in array too
+        gameController.placeMarkerInArray(gameBoardArray, square, currentPlayer, otherPlayer);
+    }
+
+    const addSquareListener = (square) => {
+
+        // if square already has a symbol, or game is over; don't do anything
+        if (square.textContent !== "" || gameController.isGameOver()) {
+            return;
+        }
+        
+        // run placeMarker with the currentPlayer as playerOne if playerOne.myTurn is true, else with currentPlayer as playerTwo
+        playerOne.myTurn ? placeMarker(square, playerOne, playerTwo) : placeMarker(square, playerTwo, playerOne);
+
+        gameController.checkIfGameOver(gameBoardArray);
+    };
+
+    const renderGameBoard = () => {
 
         for (let row = 0; row < gameBoardArray.length; row++) {
 
@@ -78,32 +56,42 @@ const gameBoard = (function () {
 
                 // add to HTML
                 document.getElementById(row).appendChild(gameBoardSquare);
-
-                // add to square array
-                gameBoardSquares.push(gameBoardSquare);
             }
         }
     };
 
-    return { renderGameBoard, resetBoard, gameOver };
+    return { renderGameBoard, resetBoard };
 
 })();
 
 gameBoard.renderGameBoard(); // test
 
-const Player = (symbol) => {
+const Player = (number, symbol) => {
     let myTurn = false;
-    return { symbol, myTurn };
+    return { number, symbol, myTurn };
 }
 
-const playerOne = Player("X");
-const playerTwo = Player("O");
+const playerOne = Player(1, "X");
+const playerTwo = Player(2, "O");
 
 const gameController = (function () {
 
     playerOne.myTurn = true;
     const info = document.querySelector(".info");
     info.textContent = "Player 1's turn";
+
+    let gameOver = false;
+
+    const placeMarkerInArray = (boardArray, square, currentPlayer, otherPlayer) => {
+
+        currentPlayer.myTurn = false;
+        otherPlayer.myTurn = true;
+
+        // update array too with marker
+        const row = parseInt(square.id.charAt(0));
+        const col = parseInt(square.id.charAt(1));
+        boardArray[row][col] = currentPlayer.symbol;
+    }
 
     const checkIfGameOver = (board) => {
 
@@ -116,7 +104,6 @@ const gameController = (function () {
         let allSquaresFilled = true;
 
         for (let row = 0; row < board.length; row++) {
-
             for (let col = 0; col < board[row].length; col++) {
 
                 if (col == 2 && board[row][col] !== "") { // checking for 1.
@@ -163,11 +150,14 @@ const gameController = (function () {
 
         // checking for 4.
         if (allSquaresFilled) {
+
             displayWinner("tie");
             endGame();
             return;
         }
     }
+
+    const isGameOver = () => gameOver;
 
     const displayWinner = (symbol) => {
 
@@ -186,7 +176,7 @@ const gameController = (function () {
     }
 
     const endGame = () => {
-        gameBoard.gameOver = true;
+        gameOver = true;
     }
 
     const resetGame = () => {
@@ -194,13 +184,13 @@ const gameController = (function () {
         gameBoard.resetBoard();
         playerOne.myTurn = true;
         playerTwo.myTurn = false;
-        gameBoard.gameOver = false;
+        gameOver = false;
     }
 
     const button = document.querySelector("#new-game-button");
     button.addEventListener("click", resetGame);
 
-    return { checkIfGameOver }
+    return { placeMarkerInArray, checkIfGameOver, isGameOver }
 
 })();
 
