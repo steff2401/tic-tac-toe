@@ -1,16 +1,16 @@
 const gameBoard = (function () {
 
     let gameBoardArray = [["", "", ""],
-    ["", "", ""],
-    ["", "", ""]];
+                          ["", "", ""],
+                          ["", "", ""]];
 
     const info = document.querySelector(".info");
 
     const resetBoard = () => {
 
         gameBoardArray = [["", "", ""],
-        ["", "", ""],
-        ["", "", ""]];
+                          ["", "", ""],
+                          ["", "", ""]];
 
 
         document.querySelectorAll(".square").forEach((square) => {
@@ -91,11 +91,11 @@ const gameController = (function () {
         currentPlayer.myTurn = false;
         otherPlayer.myTurn = true;
 
-        // update array too with marker
         const row = parseInt(square.id.charAt(0));
         const col = parseInt(square.id.charAt(1));
         boardArray[row][col] = currentPlayer.symbol;
     }
+
 
     const checkRows = (board, row, col) => {
 
@@ -160,10 +160,10 @@ const gameController = (function () {
 
     const checkIfWinnerFound = (board) => {
 
-        // game is over when: 
-        // 1. Whole row is same 
-        // 2. Whole column is same 
-        // 3. Whole diagonal is same 
+        // Winner is found when: 
+        // 1. Whole row is same symbol
+        // 2. Whole column is same symbol
+        // 3. Whole diagonal is same symbol
         // 4. All squares are filled and none of the above applies (a tie)
 
         for (let row = 0; row < board.length; row++) {
