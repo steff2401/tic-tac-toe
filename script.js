@@ -1,18 +1,18 @@
 const gameBoard = (function () {
 
     let gameBoardArray = [["", "", ""],
-                          ["", "", ""],
-                          ["", "", ""]];
+    ["", "", ""],
+    ["", "", ""]];
 
     const info = document.querySelector(".info");
-    
+
     const resetBoard = () => {
-        
+
         gameBoardArray = [["", "", ""],
-                          ["", "", ""],
-                          ["", "", ""]];
-            
-    
+        ["", "", ""],
+        ["", "", ""]];
+
+
         document.querySelectorAll(".square").forEach((square) => {
             square.textContent = "";
         });
@@ -35,7 +35,7 @@ const gameBoard = (function () {
         if (square.textContent !== "" || gameController.isGameOver()) {
             return;
         }
-        
+
         // run placeMarker with the currentPlayer as playerOne if playerOne.myTurn is true, else with currentPlayer as playerTwo
         playerOne.myTurn ? placeMarker(square, playerOne, playerTwo) : placeMarker(square, playerTwo, playerOne);
 
@@ -99,7 +99,7 @@ const gameController = (function () {
 
     const checkRows = (board, row, col) => {
 
-        if (col == 2 && board[row][col] !== "") { 
+        if (col == 2 && board[row][col] !== "") {
 
             if (board[row][0] == board[row][1] && board[row][1] == board[row][2]) {
 
@@ -111,7 +111,7 @@ const gameController = (function () {
 
     const checkColumns = (board, row, col) => {
 
-        if (row == 2 && board[row][col] !== "") { 
+        if (row == 2 && board[row][col] !== "") {
 
             if (board[0][col] == board[1][col] && board[1][col] == board[2][col]) {
 
@@ -153,7 +153,7 @@ const gameController = (function () {
                 }
             }
         }
-        
+
         displayWinner("tie");
         endGame();
     }
@@ -161,10 +161,10 @@ const gameController = (function () {
     const checkIfWinnerFound = (board) => {
 
         // game is over when: 
-            // 1. Whole row is same 
-            // 2. Whole column is same 
-            // 3. Whole diagonal is same 
-            // 4. All squares are filled and none of the above applies (a tie)
+        // 1. Whole row is same 
+        // 2. Whole column is same 
+        // 3. Whole diagonal is same 
+        // 4. All squares are filled and none of the above applies (a tie)
 
         for (let row = 0; row < board.length; row++) {
             for (let col = 0; col < board[row].length; col++) {
@@ -173,7 +173,7 @@ const gameController = (function () {
                 checkColumns(board, row, col);
 
                 // stop searching if winner has been found
-                if(isGameOver) {
+                if (isGameOver()) {
                     return;
                 }
             }
