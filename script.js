@@ -40,7 +40,7 @@ const gameBoard = (function () {
         playerOne.myTurn ? placeMarker(square, playerOne, playerTwo) : placeMarker(square, playerTwo, playerOne);
 
         // after every move, check if the game has a winner
-        gameController.checkIfGameOver(gameBoardArray);
+        gameController.checkIfWinnerFound(gameBoardArray);
     };
 
     const renderGameBoard = () => {
@@ -68,7 +68,7 @@ const gameBoard = (function () {
 
 })();
 
-gameBoard.renderGameBoard(); // test
+gameBoard.renderGameBoard(); // initialize board
 
 const Player = (number, symbol) => {
     let myTurn = false;
@@ -97,46 +97,32 @@ const gameController = (function () {
         boardArray[row][col] = currentPlayer.symbol;
     }
 
-    const checkIfGameOver = (board) => {
+    const checkRows = (board, row, col) => {
 
-        // game is over when: 
-        // 1. Whole row is same --> check that all gameBoardArray[row][0] == gameBoardArray[row][1] == gameBoardArray[row][2]
-        // 2. Whole column is same --> check that gameBoardArray[0][col] == gameBoardArray[1][col] == gameBoardArray[2][col]
-        // 3. Whole diagonal is same --> check that gameBoardArray[0][0] == gameBoardArray[1][1] == gameBoardArray[2][2] or that gameBoardArray[0][2] == gameBoardArray[1][1] == gameBoardArray[2][0]
-        // 4. All squares are filled and none of the above applies (a tie)
+        if (col == 2 && board[row][col] !== "") { 
 
-        let allSquaresFilled = true;
+            if (board[row][0] == board[row][1] && board[row][1] == board[row][2]) {
 
-        for (let row = 0; row < board.length; row++) {
-            for (let col = 0; col < board[row].length; col++) {
-
-                if (col == 2 && board[row][col] !== "") { // checking for 1.
-
-                    if (board[row][0] == board[row][1] && board[row][1] == board[row][2]) {
-
-                        displayWinner(board[row][0]);
-                        endGame();
-                        return;
-                    }
-                }
-
-                if (row == 2 && board[row][col] !== "") { // checking for 2.
-
-                    if (board[0][col] == board[1][col] && board[1][col] == board[2][col]) {
-
-                        displayWinner(board[0][col]);
-                        endGame();
-                        return;
-                    }
-                }
-
-                if (board[row][col] == "") { // set-up for 4.
-                    allSquaresFilled = false;
-                }
+                displayWinner(board[row][0]);
+                endGame();
             }
         }
+    }
 
-        // checking for 3. (first diagonal)
+    const checkColumns = (board, row, col) => {
+
+        if (row == 2 && board[row][col] !== "") { 
+
+            if (board[0][col] == board[1][col] && board[1][col] == board[2][col]) {
+
+                displayWinner(board[0][col]);
+                endGame();
+            }
+        }
+    }
+
+    const checkDiagonals = (board) => {
+
         if ((board[0][0] != "" && board[0][0] == board[1][1] && board[1][1] == board[2][2])) {
 
             displayWinner(board[0][0]);
@@ -144,21 +130,57 @@ const gameController = (function () {
             return;
         }
 
-        // checking for 3. (second diagonal)
         if ((board[0][2] != "" && board[0][2] == board[1][1] && board[1][1] == board[2][0])) {
 
             displayWinner(board[0][2]);
             endGame();
             return;
         }
+    }
 
-        // checking for 4.
-        if (allSquaresFilled) {
+    const checkTie = (board) => {
 
-            displayWinner("tie");
-            endGame();
+        // if a player has already won, don't do anything
+        if (info.textContent.includes("won")) {
             return;
         }
+
+        for (let row = 0; row < board.length; row++) {
+            for (let col = 0; col < board[row].length; col++) {
+
+                if (board[row][col] == "") {
+                    return;
+                }
+            }
+        }
+        
+        displayWinner("tie");
+        endGame();
+    }
+
+    const checkIfWinnerFound = (board) => {
+
+        // game is over when: 
+            // 1. Whole row is same 
+            // 2. Whole column is same 
+            // 3. Whole diagonal is same 
+            // 4. All squares are filled and none of the above applies (a tie)
+
+        for (let row = 0; row < board.length; row++) {
+            for (let col = 0; col < board[row].length; col++) {
+
+                checkRows(board, row, col);
+                checkColumns(board, row, col);
+
+                // stop searching if winner has been found
+                if(isGameOver) {
+                    return;
+                }
+            }
+        }
+
+        checkDiagonals(board);
+        checkTie(board);
     }
 
     const isGameOver = () => gameOver;
@@ -194,7 +216,7 @@ const gameController = (function () {
     const button = document.querySelector("#new-game-button");
     button.addEventListener("click", resetGame);
 
-    return { placeMarkerInArray, checkIfGameOver, isGameOver }
+    return { placeMarkerInArray, checkIfWinnerFound, isGameOver }
 
 })();
 
